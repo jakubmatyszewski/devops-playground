@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  remote_user: vagrant
+  become: yes
+  tasks:
+    - name: Install aptitude
+      apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+      
+    - name: Uninstall python2.7
+      apt:
+        name: python2.7-minimal
+        state: absent
+
+    - name: Install required packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip']
+
+    - name: Add Docker GPG apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repo
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Pull Ghost image
+      docker_image:
+        name: ghost
+        source: pull
+
+    - name: Run ghost image
+      docker_container:
+        name: ghost
+        image: ghost
+        published_ports: 0.0.0.0:8080:2368
+        state: started
+

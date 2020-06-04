@@ -1,0 +1,7 @@
+[default]
+localhost
+
+[default:vars]
+ansible_ssh_port=2222
+ansible_ssh_user=vagrant
+ansible_python_interpreter=/usr/bin/python3
