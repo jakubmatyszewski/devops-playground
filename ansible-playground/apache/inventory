@@ -1,0 +1,18 @@
+# CentOS
+[centos]
+192.168.60.4
+
+# Ubuntu
+[ubuntu]
+192.168.60.5
+
+# Group has all the servers
+[multi:children]
+centos
+ubuntu
+
+# Variables for all the servers
+[multi:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+

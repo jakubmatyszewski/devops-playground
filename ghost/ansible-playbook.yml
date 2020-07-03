@@ -38,9 +38,13 @@
         source: pull
 
 
-    - name: Define Vagrant public ip
+    - name: Define Vagrant public ip & ghost url
       set_fact:
               vagrant_ip: "{{ ansible_facts['eth1']['ipv4']['address'] }}"
+              
+    - name: Define ghost url
+      set_fact:
+              ghost_url: "{{ 'http://'+vagrant_ip+':8080' }}"
 
     - name: Run ghost image
       docker_container:
@@ -48,6 +52,12 @@
         image: ghost
         published_ports: 8080:2368
         env:
-                url: "{{ 'http://'+vagrant_ip+':8080' }}"
+                url: "{{ ghost_url }}"
+        healthcheck:
+                test: ["CMD", "curl", "--fail", "{{ ghost_url }}"]
+                interval: 3m30s
+                timeout: 5s
+                retries: 3
+                start_period: 30s
         state: started
 
